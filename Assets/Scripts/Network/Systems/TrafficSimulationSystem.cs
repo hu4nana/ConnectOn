@@ -69,8 +69,25 @@ namespace ConnectOn.Network.Systems
                     continue;
                 }
 
-                if (packet.Progress <= 0f && !world.TryEnterEdge(edge))
-                    continue;
+                if (packet.Progress <= 0f)
+                {
+                    if (!world.TryEnterEdge(edge))
+                    {
+                        if (!packet.IsWaiting)
+                        {
+                            packet.IsWaiting = true;
+                            world.AddEdgeWaiting(edge);
+                        }
+
+                        continue;
+                    }
+
+                    if (packet.IsWaiting)
+                    {
+                        packet.IsWaiting = false;
+                        world.RemoveEdgeWaiting(edge);
+                    }
+                }
 
                 float traveledDistance = packet.Progress * edge.Length;
                 float currentSpeed = edge.Cable.GetSpeed(traveledDistance);
@@ -170,8 +187,13 @@ namespace ConnectOn.Network.Systems
         void AbortPacket(PacketData packet)
         {
             NetworkEdgeData edge = packet.CurrentEdge;
-            if (edge != null && packet.Progress > 0f)
-                world.ExitEdge(edge);
+            if (edge != null)
+            {
+                if (packet.IsWaiting)
+                    world.RemoveEdgeWaiting(edge);
+                else if (packet.Progress > 0f)
+                    world.ExitEdge(edge);
+            }
 
             world.DestroyPacketView(packet);
         }

@@ -31,6 +31,17 @@ namespace ConnectOn.Network.View
             RenderState();
         }
 
+        public void SetSprite(Sprite sprite)
+        {
+            if (sprite == null)
+                return;
+
+            if (spriteRenderer == null)
+                spriteRenderer = GetComponent<SpriteRenderer>();
+
+            spriteRenderer.sprite = sprite;
+        }
+
         public void SetSelected(bool selected)
         {
             if (spriteRenderer == null)
@@ -50,7 +61,10 @@ namespace ConnectOn.Network.View
             if (label == null || Data == null)
                 return;
 
-            label.text = name + "\nD " + Mathf.CeilToInt(Data.PendingDemand) + " / W " + Mathf.CeilToInt(Data.WarningGauge);
+            if (Data.Type == NodeKind.Client)
+                label.text = name + "\nLV " + Data.Level + "\nD " + Mathf.CeilToInt(Data.PendingDemand) + " / W " + Mathf.CeilToInt(Data.WarningGauge);
+            else
+                label.text = name;
         }
 
         void CreateLabel()

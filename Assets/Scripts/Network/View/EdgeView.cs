@@ -61,8 +61,8 @@ namespace ConnectOn.Network.View
             if (label == null)
                 return;
 
-            label.text = Data.Cable.Kind + "\n" + Data.CurrentLoad + " / " + Data.Capacity;
-            label.color = Data.HasCapacity() ? Color.white : Color.red;
+            label.text = Data.Cable.Kind + "\nL " + Data.CurrentLoad + " / " + Data.Capacity + "  Q " + Data.WaitingCount;
+            label.color = Data.WaitingCount > 0 ? Color.red : Color.white;
         }
 
         void CreateLabel()

@@ -174,7 +174,23 @@ MonoBehaviour:
   nodesParent: {fileID: 0}
   edgesParent: {fileID: 0}
   packetsParent: {fileID: 0}
+  clientNodePrefab: {fileID: 780697968076091027, guid: d3c9f1eac92946e4da250268518a2fd3, type: 3}
+  serverNodePrefab: {fileID: 3335975359642706541, guid: 84a0f88057000a3418a9aa46fc379037, type: 3}
+  routerNodePrefab: {fileID: 3952196604856680652, guid: c32f2c8e68baad749a80b54651848b9d, type: 3}
   nodeSprite: {fileID: 0}
+  serverSprite: {fileID: 21300000, guid: a54e025f9f78d2644bc14250ce914e55, type: 3}
+  clientMiniSprites:
+  - {fileID: 21300000, guid: 9d3a1375e292e1140b005f752d0afcbc, type: 3}
+  - {fileID: 21300000, guid: 632c53c75003c6c4a9d9fb113c15389a, type: 3}
+  - {fileID: 21300000, guid: f5f69542a6e152e4d86ec79de1376970, type: 3}
+  clientMediumSprites:
+  - {fileID: 21300000, guid: 7f99a06a0157fae4a8c7bb9fe514faa5, type: 3}
+  - {fileID: 21300000, guid: 03f037f70366ed344b7f135332bd7adb, type: 3}
+  - {fileID: 21300000, guid: 9bd53a76055afc64a9bad2ff65c78b3f, type: 3}
+  clientBigSprites:
+  - {fileID: 21300000, guid: 04e763e1b90acc64aaecb10a2ee58418, type: 3}
+  - {fileID: 21300000, guid: 6a0bc24e3b3a0564fb67bbefebdca744, type: 3}
+  - {fileID: 21300000, guid: 71d9458575e8328439e9075a56de2c6c, type: 3}
   edgeMaterial: {fileID: 0}
   defaultCableKind: 0
 --- !u!114 &185556538
@@ -588,7 +604,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.04, g: 0.05, b: 0.07, a: 1}
+  m_BackGroundColor: {r: 0.8627451, g: 0.89411765, b: 0.91764706, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0

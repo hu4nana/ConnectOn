@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace ConnectOn.Network.Core
 {
     public sealed class NetworkEdgeData
@@ -14,7 +12,7 @@ namespace ConnectOn.Network.Core
         public float Speed => Cable.BaseSpeed;
         public int Capacity => Cable.Capacity;
         public int CurrentLoad { get; private set; }
-        public Queue<PacketData> WaitingPackets { get; } = new Queue<PacketData>();
+        public int WaitingCount { get; private set; }
 
         public NetworkEdgeData(int id, NetworkNodeData a, NetworkNodeData b, float length, CableSpec cable, bool isPlayerBuilt)
         {
@@ -53,6 +51,17 @@ namespace ConnectOn.Network.Core
         {
             if (CurrentLoad > 0)
                 CurrentLoad--;
+        }
+
+        public void AddWaiting()
+        {
+            WaitingCount++;
+        }
+
+        public void RemoveWaiting()
+        {
+            if (WaitingCount > 0)
+                WaitingCount--;
         }
     }
 }

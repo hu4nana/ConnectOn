@@ -11,6 +11,7 @@ namespace ConnectOn.Network.Core
         public IReadOnlyList<NetworkEdgeData> Path { get; }
         public int EdgeIndex { get; private set; }
         public float Progress { get; set; }
+        public bool IsWaiting { get; set; }
         public bool IsComplete { get; private set; }
 
         public NetworkEdgeData CurrentEdge => EdgeIndex < Path.Count ? Path[EdgeIndex] : null;

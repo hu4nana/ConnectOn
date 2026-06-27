@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using ConnectOn.Network.Core;
 using ConnectOn.Network.View;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace ConnectOn.Network.Systems
 {
@@ -12,8 +13,17 @@ namespace ConnectOn.Network.Systems
         [SerializeField] Transform edgesParent;
         [SerializeField] Transform packetsParent;
 
+        [Header("Prefabs")]
+        [SerializeField] NodeView clientNodePrefab;
+        [SerializeField] NodeView serverNodePrefab;
+        [SerializeField] NodeView routerNodePrefab;
+
         [Header("Visuals")]
         [SerializeField] Sprite nodeSprite;
+        [SerializeField] Sprite serverSprite;
+        [SerializeField] Sprite[] clientMiniSprites;
+        [SerializeField] Sprite[] clientMediumSprites;
+        [SerializeField] Sprite[] clientBigSprites;
         [SerializeField] Material edgeMaterial;
 
         [Header("Simulation")]
@@ -43,19 +53,11 @@ namespace ConnectOn.Network.Systems
             traffic = GetComponent<TrafficSimulationSystem>();
         }
 
-        public NodeView CreateNode(NodeKind type, Vector2 position, string displayName, bool isPlayerBuilt = false)
+        public NodeView CreateNode(NodeKind type, Vector2 position, string displayName, bool isPlayerBuilt = false, int level = 1)
         {
-            NetworkNodeData data = Graph.AddNode(type, position, isPlayerBuilt);
-            GameObject obj = new GameObject(displayName);
-            obj.transform.SetParent(nodesParent);
-            obj.transform.position = position;
-
-            SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
-            renderer.sprite = nodeSprite;
-            renderer.sortingOrder = 1;
-            obj.AddComponent<CircleCollider2D>();
-
-            NodeView view = obj.AddComponent<NodeView>();
+            NetworkNodeData data = Graph.AddNode(type, position, isPlayerBuilt, level);
+            NodeView view = CreateNodeView(type, position, displayName);
+            view.SetSprite(GetNodeSprite(data));
             view.Bind(data, displayName, GetNodeColor(type));
             nodeViews[data] = view;
             return view;
@@ -138,6 +140,26 @@ namespace ConnectOn.Network.Systems
                 return;
 
             edge.Exit();
+            if (edgeViews.TryGetValue(edge, out EdgeView view))
+                view.RenderLoad();
+        }
+
+        public void AddEdgeWaiting(NetworkEdgeData edge)
+        {
+            if (edge == null)
+                return;
+
+            edge.AddWaiting();
+            if (edgeViews.TryGetValue(edge, out EdgeView view))
+                view.RenderLoad();
+        }
+
+        public void RemoveEdgeWaiting(NetworkEdgeData edge)
+        {
+            if (edge == null)
+                return;
+
+            edge.RemoveWaiting();
             if (edgeViews.TryGetValue(edge, out EdgeView view))
                 view.RenderLoad();
         }
@@ -234,6 +256,76 @@ namespace ConnectOn.Network.Systems
             return obj.transform;
         }
 
+        NodeView CreateNodeView(NodeKind type, Vector2 position, string displayName)
+        {
+            NodeView prefab = GetNodePrefab(type);
+            if (prefab != null)
+            {
+                NodeView view = Instantiate(prefab, position, Quaternion.identity, nodesParent);
+                view.name = displayName;
+                return view;
+            }
+
+            GameObject obj = new GameObject(displayName);
+            obj.transform.SetParent(nodesParent);
+            obj.transform.position = position;
+
+            SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
+            renderer.sprite = nodeSprite;
+            renderer.sortingOrder = 1;
+            obj.AddComponent<CircleCollider2D>();
+            return obj.AddComponent<NodeView>();
+        }
+
+        NodeView GetNodePrefab(NodeKind type)
+        {
+            switch (type)
+            {
+                case NodeKind.Client:
+                    return clientNodePrefab;
+                case NodeKind.DataServer:
+                    return serverNodePrefab;
+                case NodeKind.Router:
+                    return routerNodePrefab;
+                default:
+                    return null;
+            }
+        }
+
+        Sprite GetNodeSprite(NetworkNodeData data)
+        {
+            switch (data.Type)
+            {
+                case NodeKind.Client:
+                    return GetClientSprite(data.Level);
+                case NodeKind.DataServer:
+                    return serverSprite != null ? serverSprite : nodeSprite;
+                default:
+                    return nodeSprite;
+            }
+        }
+
+        Sprite GetClientSprite(int level)
+        {
+            switch (Mathf.Clamp(level, 1, 3))
+            {
+                case 2:
+                    return PickSprite(clientMediumSprites);
+                case 3:
+                    return PickSprite(clientBigSprites);
+                default:
+                    return PickSprite(clientMiniSprites);
+            }
+        }
+
+        Sprite PickSprite(Sprite[] sprites)
+        {
+            if (sprites == null || sprites.Length == 0)
+                return nodeSprite;
+
+            return sprites[Random.Range(0, sprites.Length)];
+        }
+
         Sprite FindFallbackSprite()
         {
             SpriteRenderer renderer = FindFirstObjectByType<SpriteRenderer>();
@@ -276,12 +368,10 @@ namespace ConnectOn.Network.Systems
         {
             switch (type)
             {
-                case NodeKind.DataServer:
-                    return Color.cyan;
                 case NodeKind.Router:
                     return Color.gray;
                 default:
-                    return new Color(1f, 0.55f, 0.25f);
+                    return Color.white;
             }
         }
     }

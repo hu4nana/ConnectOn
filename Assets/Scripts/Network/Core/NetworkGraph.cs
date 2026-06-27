@@ -14,9 +14,9 @@ namespace ConnectOn.Network.Core
         public IReadOnlyList<NetworkNodeData> Nodes => nodes;
         public IReadOnlyList<NetworkEdgeData> Edges => edges;
 
-        public NetworkNodeData AddNode(NodeKind type, Vector2 position, bool isPlayerBuilt)
+        public NetworkNodeData AddNode(NodeKind type, Vector2 position, bool isPlayerBuilt, int level)
         {
-            NetworkNodeData node = new NetworkNodeData(nextNodeId++, type, position, isPlayerBuilt);
+            NetworkNodeData node = new NetworkNodeData(nextNodeId++, type, position, isPlayerBuilt, level);
             nodes.Add(node);
             adjacency[node] = new List<NetworkEdgeData>();
             return node;

@@ -61,8 +61,18 @@ namespace ConnectOn.Network.Systems
                 return false;
 
             spawnedClients++;
-            world.CreateNode(NodeKind.Client, position, "Client " + spawnedClients);
+            int level = GetClientLevelForCurrentWeek();
+            world.CreateNode(NodeKind.Client, position, "Client " + spawnedClients, false, level);
             return true;
+        }
+
+        int GetClientLevelForCurrentWeek()
+        {
+            if (CurrentWeek >= 6)
+                return Random.Range(1, 4);
+            if (CurrentWeek >= 3)
+                return Random.Range(1, 3);
+            return 1;
         }
 
         bool TryFindSpawnPosition(out Vector2 position)
